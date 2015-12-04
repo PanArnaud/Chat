@@ -1,16 +1,17 @@
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class ChatServeur extends JFrame{
+public class ChatServeur extends JFrame implements MouseListener{
 	
 	//Attributs
 	static ServerSocket serveur;
@@ -32,11 +33,14 @@ public class ChatServeur extends JFrame{
 		container.setLayout(new BorderLayout());
 		
 		textArea = new JTextArea();
-		container.add(textArea, BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		textArea.setEditable(false);
+		container.add(scrollPane, BorderLayout.CENTER);
+		
 		exit = new JButton("Exit");
+		exit.addMouseListener(this);
 		container.add(exit, BorderLayout.SOUTH);
 
-		
 		this.setVisible(true);
 		
 		try{
@@ -93,5 +97,30 @@ public class ChatServeur extends JFrame{
 			serveur.close();
 		} catch(Exception e){}
 		textArea.append("Bye bye...\n");
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+			
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+			
 	}
 }
