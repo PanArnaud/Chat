@@ -93,7 +93,6 @@ public class ChatServeur extends JFrame implements MouseListener{
 	public static void main(String[] args){
 		new ChatServeur();
 		try{
-			
 			serveur.close();
 		} catch(Exception e){}
 		textArea.append("Bye bye...\n");
@@ -120,7 +119,9 @@ public class ChatServeur extends JFrame implements MouseListener{
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-			
+	public void mouseReleased(MouseEvent e) {
+		if(e.getSource() == exit){
+			System.exit(-1);
+		}
 	}
 }
