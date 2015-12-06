@@ -56,7 +56,7 @@ public class ChatServeur extends JFrame implements MouseListener{
 		
 	}
 	
-	private void afficherMessage(String message){
+	private static void afficherMessage(String message){
 		textArea.append(message + "\n");
 	}
 	
@@ -80,7 +80,7 @@ public class ChatServeur extends JFrame implements MouseListener{
 				String line = reader.readLine();
 			
 				//On affiche le message puis on ferme la connexion et on sort de la boucle.
-				afficherMessage("Message reçu:" + line);
+				afficherMessage("Message:" + line);
 				client.close();
 				break;
 			}catch(Exception e){
@@ -95,7 +95,7 @@ public class ChatServeur extends JFrame implements MouseListener{
 		try{
 			serveur.close();
 		} catch(Exception e){}
-		textArea.append("Bye bye...\n");
+		afficherMessage("Bye bye...\n");
 	}
 
 	@Override
