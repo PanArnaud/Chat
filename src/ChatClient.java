@@ -10,12 +10,13 @@ import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ChatClient extends JFrame implements MouseListener {
+public class ChatClient extends JFrame implements MouseListener, Runnable {
 
 	//Attributs
 	static String serveurAddr = "localhost";
@@ -27,6 +28,8 @@ public class ChatClient extends JFrame implements MouseListener {
 	static JTextArea textArea;
 	static JPanel bottomSide;
 	JButton envoyer;
+	String line;
+	String nom;
 	
 	public ChatClient(){
 		
@@ -61,10 +64,17 @@ public class ChatClient extends JFrame implements MouseListener {
 		
 		try{
 			client = new Socket(serveurAddr, serveurPort);
-			afficherMessage("Client: " + client);
+			nom =  JOptionPane.showInputDialog("Pseudo: ");
+			afficherMessage("Client: " + nom);
 			writer = new PrintWriter(client.getOutputStream());
 			InputStreamReader stream = new InputStreamReader(client.getInputStream());
 			reader = new BufferedReader(stream);
+			writer.println(nom);
+			writer.flush();
+			
+			//On lance le processus
+			Thread process = new Thread(this);
+			process.start();
 		}catch(Exception e){
 			afficherMessage("Erreur connexion au serveur");
 			e.printStackTrace();
@@ -82,10 +92,6 @@ public class ChatClient extends JFrame implements MouseListener {
 			writer.println(message);
 			writer.flush();
 			textField.setText("");
-			
-			
-			String line = reader.readLine();
-			afficherMessage(line);
 		}catch(Exception e){
 			System.out.println("Erreur dans l'envoi du message");
 			e.printStackTrace();
@@ -129,6 +135,20 @@ public class ChatClient extends JFrame implements MouseListener {
 		if(e.getSource() == envoyer){
 			String message = textField.getText();
 			emettre(message);
+		}
+	}
+
+	@Override
+	public void run() {
+		try{
+			while(true){
+				//On lit la chaîne de caractères
+				line = reader.readLine();
+				//On affiche le message
+				afficherMessage(line);
+			}
+		}catch(Exception e){
+			
 		}
 	}
 

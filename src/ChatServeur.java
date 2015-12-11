@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -15,10 +16,10 @@ import javax.swing.JTextArea;
 public class ChatServeur extends JFrame implements MouseListener{
 	
 	//Attributs
-	PrintWriter writer;
 	static ServerSocket serveur;
+	Vector <PrintWriter> listeClients;
 	int serveurPort = 8888;
-	static JTextArea textArea;
+	JTextArea textArea;
 	JButton exit;
 	
 	//On instancie le ServerSocket
@@ -48,17 +49,21 @@ public class ChatServeur extends JFrame implements MouseListener{
 		try{
 			serveur = new ServerSocket(serveurPort);
 			afficherMessage("ServerSocket: " + serveur);
+			
+			listeClients = new Vector<PrintWriter>();
+			
 			afficherMessage("Serveur Actif");
 		}catch(Exception e){
 			afficherMessage("Erreur de création du ServerSocket");
 			e.printStackTrace();
 			System.exit(-1);
 		}
+		
 		ecouter();
 		
 	}
 	
-	private static void afficherMessage(String message){
+	public void afficherMessage(String message){
 		textArea.append(message + "\n");
 	}
 	
@@ -69,37 +74,51 @@ public class ChatServeur extends JFrame implements MouseListener{
 				Socket client = serveur.accept();
 				
 				//Sorti d'attente
-				afficherMessage("Client connecté");
-				afficherMessage("Socket:" + client);
-			
 				String line = "";
 				//Stream convertissant les bytes en caractères
 				InputStreamReader stream = new InputStreamReader(client.getInputStream());
-				
 				//On utilise un tampon de mémoire
 				BufferedReader reader = new BufferedReader(stream);
 				
-				//Initialise Writer
-				writer = new PrintWriter(client.getOutputStream());
+				String nom = reader.readLine();
 				
-				while(line != null){
-					//On lit la chaîne de caractères
-					line = reader.readLine();
-					if(line.equals("quit")){
-						break;
-					}else{
-						//On affiche le message
-						afficherMessage("Message:" + line);
-						writer.println("Message:" + line);
-						writer.flush();
-					}
-				}
-				client.close();
+				afficherMessage("Utilisateur: " + nom);
+				//afficherMessage("Socket:" + client);
+				
+				//Créer Thread d'écoute
+				EcouteClient ecouteclient = new EcouteClient(this, reader, nom);
+				ecouteclient.start();
+				
+				//Initialise Writer
+				PrintWriter writer = new PrintWriter(client.getOutputStream());
+				
+				//Enregistrement dans le vecteur
+				listeClients.add(writer);
+
+				//Accueil utilisateur
+				envoyerATous(null, nom + " à rejoint le salon !");
 			}catch(Exception e){
 				afficherMessage("Erreur dans le traitement de la connexion cliente");
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void envoyerATous(String nom, String message){
+		if(nom != null){
+			for(int i=0; i<listeClients.size(); i++)
+	        {
+				listeClients.get(i).println(nom + ": " + message);
+				listeClients.get(i).flush();
+	        }
+		}else{
+			for(int i=0; i<listeClients.size(); i++)
+	        {
+				listeClients.get(i).println(message);
+				listeClients.get(i).flush();
+	        }
+		}
+		
 	}
 	
 	public static void main(String[] args){
