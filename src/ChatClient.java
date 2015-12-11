@@ -77,6 +77,7 @@ public class ChatClient extends JFrame implements MouseListener {
 		try{
 			writer.println(message);
 			writer.flush();
+			textField.setText("");
 		}catch(Exception e){
 			System.out.println("Erreur dans l'envoi du message");
 			e.printStackTrace();
@@ -85,10 +86,10 @@ public class ChatClient extends JFrame implements MouseListener {
 	
 	public static void main(String[] args) {
 		new ChatClient();
-		try{
-			client.close();
-		} catch(Exception e){}
-		afficherMessage("Bye bye...");
+		//try{
+			//client.close();
+		//} catch(Exception e){}
+		//afficherMessage("Bye bye...");
 	}
 
 	@Override

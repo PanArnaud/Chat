@@ -70,19 +70,24 @@ public class ChatServeur extends JFrame implements MouseListener{
 				afficherMessage("Client connecté");
 				afficherMessage("Socket:" + client);
 			
+				String line = "";
 				//Stream convertissant les bytes en caractères
 				InputStreamReader stream = new InputStreamReader(client.getInputStream());
 				
 				//On utilise un tampon de mémoire
 				BufferedReader reader = new BufferedReader(stream);
 				
-				//On lit la chaîne de caractères
-				String line = reader.readLine();
-			
-				//On affiche le message puis on ferme la connexion et on sort de la boucle.
-				afficherMessage("Message:" + line);
+				while(line != null){
+					//On lit la chaîne de caractères
+					line = reader.readLine();
+					if(line.equals("quit")){
+						break;
+					}else{
+						//On affiche le message
+						afficherMessage("Message:" + line);
+					}
+				}
 				client.close();
-				break;
 			}catch(Exception e){
 				afficherMessage("Erreur dans le traitement de la connexion cliente");
 				e.printStackTrace();
@@ -92,10 +97,10 @@ public class ChatServeur extends JFrame implements MouseListener{
 	
 	public static void main(String[] args){
 		new ChatServeur();
-		try{
+		/*try{
 			serveur.close();
 		} catch(Exception e){}
-		afficherMessage("Bye bye...\n");
+		afficherMessage("Bye bye...\n");*/
 	}
 
 	@Override
