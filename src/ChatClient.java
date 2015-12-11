@@ -3,6 +3,7 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -20,6 +21,7 @@ public class ChatClient extends JFrame implements MouseListener {
 	static String serveurAddr = "localhost";
 	static Socket client;
 	PrintWriter writer;
+	BufferedReader reader;
 	int serveurPort = 8888;
 	static JTextField textField;
 	static JTextArea textArea;
@@ -61,6 +63,8 @@ public class ChatClient extends JFrame implements MouseListener {
 			client = new Socket(serveurAddr, serveurPort);
 			afficherMessage("Client: " + client);
 			writer = new PrintWriter(client.getOutputStream());
+			InputStreamReader stream = new InputStreamReader(client.getInputStream());
+			reader = new BufferedReader(stream);
 		}catch(Exception e){
 			afficherMessage("Erreur connexion au serveur");
 			e.printStackTrace();
@@ -78,6 +82,10 @@ public class ChatClient extends JFrame implements MouseListener {
 			writer.println(message);
 			writer.flush();
 			textField.setText("");
+			
+			
+			String line = reader.readLine();
+			afficherMessage(line);
 		}catch(Exception e){
 			System.out.println("Erreur dans l'envoi du message");
 			e.printStackTrace();

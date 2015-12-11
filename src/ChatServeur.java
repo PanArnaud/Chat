@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JButton;
@@ -14,6 +15,7 @@ import javax.swing.JTextArea;
 public class ChatServeur extends JFrame implements MouseListener{
 	
 	//Attributs
+	PrintWriter writer;
 	static ServerSocket serveur;
 	int serveurPort = 8888;
 	static JTextArea textArea;
@@ -77,6 +79,9 @@ public class ChatServeur extends JFrame implements MouseListener{
 				//On utilise un tampon de mémoire
 				BufferedReader reader = new BufferedReader(stream);
 				
+				//Initialise Writer
+				writer = new PrintWriter(client.getOutputStream());
+				
 				while(line != null){
 					//On lit la chaîne de caractères
 					line = reader.readLine();
@@ -85,6 +90,8 @@ public class ChatServeur extends JFrame implements MouseListener{
 					}else{
 						//On affiche le message
 						afficherMessage("Message:" + line);
+						writer.println("Message:" + line);
+						writer.flush();
 					}
 				}
 				client.close();
